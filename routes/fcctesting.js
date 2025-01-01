@@ -27,33 +27,35 @@
 
 'use strict';
 
-const cors = require('cors');
-const fs = require('fs');
-const runner = require('../test-runner');
+import cors from 'cors';
+import fs from 'fs';
+import runner from '../test-runner.js';
 
-module.exports = function (app) {
+export default function (app) {
 
   app.route('/_api/server.js')
     .get(function(req, res, next) {
       console.log('requested');
       fs.readFile(__dirname + '/server.js', function(err, data) {
-        if(err) return next(err);
+        if (err) return next(err);
         res.send(data.toString());
       });
     });
+
   app.route('/_api/routes/api.js')
     .get(function(req, res, next) {
       console.log('requested');
       fs.readFile(__dirname + '/routes/api.js', function(err, data) {
-        if(err) return next(err);
+        if (err) return next(err);
         res.type('txt').send(data.toString());
       });
     });
+
   app.route('/_api/controllers/convertHandler.js')
     .get(function(req, res, next) {
       console.log('requested');
       fs.readFile(__dirname + '/controllers/convertHandler.js', function(err, data) {
-        if(err) return next(err);
+        if (err) return next(err);
         res.type('txt').send(data.toString());
       });
     });
@@ -64,7 +66,8 @@ module.exports = function (app) {
     res.json({status: 'unavailable'});
   },
   function(req, res, next){
-    if(!runner.report) return next();
+    console.log(runner.report);
+    if (!runner.report) return next();
     res.json(testFilter(runner.report, req.query.type, req.query.n));
   },
   function(req, res){
@@ -72,6 +75,7 @@ module.exports = function (app) {
       process.nextTick(() =>  res.json(testFilter(runner.report, req.query.type, req.query.n)));
     });
   });
+
   app.get('/_api/app-info', function(req, res) {
     let hs = Object.keys(res._headers)
       .filter(h => !h.match(/^access-control-\w+/));
@@ -80,7 +84,7 @@ module.exports = function (app) {
     delete res._headers['strict-transport-security'];
     res.json({headers: hObj});
   });
-  
+
 };
 
 function testFilter(tests, type, n) {
@@ -95,7 +99,7 @@ function testFilter(tests, type, n) {
     default:
       out = tests;
   }
-  if(n !== undefined) {
+  if (n !== undefined) {
     return out[n] || out;
   }
   return out;

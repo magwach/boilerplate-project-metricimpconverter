@@ -43,12 +43,15 @@
       $(function() {
         $('#convertForm').submit(function(event) {
           event.preventDefault();
+          $('#result').text('');
           $.ajax({
             url: '/api/convert',
             type: 'get',
             data: $('#convertForm').serialize(),
             success: function(data) {
+              if(!data.error){
               $('#result').text(data.string || data);
+            }
               $('#jsonResult').text(JSON.stringify(data));
             }
           });
